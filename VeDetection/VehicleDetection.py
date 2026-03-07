@@ -26,11 +26,24 @@ while cap.isOpened():
 
     #Main code to detect the car
     cars = car_cascade.detectMultiScale(gray,scaleFactor = 1.1, minNeighbors = 3) #gray is the input image/video, scaleFactor helps detect the car at different distances(1.1 will reduce the image size by 10% at each scale, minNeighbors (higher value = fewer false detection, lower value = more detection but more errors))
-    if len((cars) > 0) and not Car_detected:
+    if len(cars) > 0 and not Car_detected:
         Car_detected = True
         Detection_time = time.time()
         print("Car detected")
 
+    #Draw rectangles around detected cars
+    for (x, y, w, h) in cars:
+        cv2.rectangle(frames, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.putText(frames, "Car detected", (x, y - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
+        cv2.imshow("Car Detection", frames)
+
     if Car_detected and time.time() - Detection_time > 5:
         break
+    
+    if cv2.waitKey(1) == 27:
+        break
 
+cap.release()
+cv2.destroyAllWindows()
